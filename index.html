@@ -1,0 +1,1749 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Client MVC != Server MVC</title>
+
+		<meta name="description" content="Client MVC != Server MVC">
+		<meta name="author" content="Jeremy Green">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/sky.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="css/hemisu-dark.css">
+
+    <!-- Custom stuff -->
+		<link rel="stylesheet" href="css/custom.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+        <section data-background="img/lan_su_tomster.jpg" data-state="intro">
+          <!--img src="img/ThatConfLogo.png" class="no-border"/-->
+          
+          <h1 class="smallest">Client MVC != Server MVC</h1>
+          <!--div class="subtitle fragment">
+            <h3>Stumbling towards SOA</h3>
+            <h3>The story of CloudHDR</h3>
+          </div-->
+        </section>
+
+        <section>
+          <h1 class="smallest">Client MVC != Server MVC</h1>
+          <br/><br/>
+          <h2>Ember for Rails* Developers</h2>
+          <br/><br/>
+          <p>*Or other server side MVC</p>
+        </section>
+
+<section>
+  <table border="0" class="vert-middle" width="100%">
+    <tr>
+      <td colspan="2">
+        <h3>A bit about me</h3>
+        <hr />
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <br />
+        <h3>Jeremy Green</h3>
+        <h3>Consultant</h3>
+        <h4>Organizer of OkcRuby.org</h4>
+        <h4>Also into drumming, photography, and brewing</h4>
+        <!--h4 class="fragment fade-in">okc dev community enthusiast - okcruby.org, okcjs.org</h4-->
+      </td>
+    </tr>
+    <tr class="">
+      <td>
+        <img src="img/octologo.png" class="no-border">
+      </td>
+      <td>
+        @jagthedrummer <br />
+        jeremy@octolabs.com <br />
+        <a href="http://www.octolabs.com/">http://www.octolabs.com/</a>
+      </td>
+    </tr>
+  </table>
+  <aside class="notes">
+    These items are in chronological order.<br />
+    I've been drumming much more than half my life.<br />
+    Coding, just about half.<br />
+    * next fragment * <br />
+    Thanks to Jesse and Vance of okcjs for organizing Thunder Plains.
+    * next fragment * <br />
+    I'm historically bad at Twitter, but trying to get better.<br />
+    Contacting me through OctoLabs is more reliable.
+  </aside>
+</section>
+
+<section>
+  <a href="http://watch.canary.io">http://watch.canary.io</a>
+  <hr />
+  <img src="img/canary-watch.gif" class="no-border"/>
+</section>
+
+
+<section>
+  <h1 class="smaller">A talk in two parts</h1>
+  <br/>
+  <ol>
+    <li>Compare/Contrast Ember <=> Rails<br/><br></li>
+    <li>Step through building a small app</li>
+  </ol>
+  <br/><br/>
+  <div class="fragment fade-in">
+    <hr />
+    <p class="fade-in">Part 2 is bonus content for later.</p>
+  </div>
+</section>
+
+<!--
+<section>
+  <h1>Show of hands</h1>
+  <br/>
+  <ul>
+    <li class="fragment fade-in">Who has experience with Ember?</li>
+    <br/>
+    <li class="fragment fade-in">Who has experience with single page apps?</li>
+    <br/>
+    <li class="fragment fade-in">Who has experience with Rails or .NET MVC?</li>
+  </ul>
+</section>
+-->
+
+<section data-background="img/stage-tomster.jpg" data-state="intro">
+  <br/><br/>
+  <h1>Set the stage</h1>
+  <aside class="notes">
+    Ember is a tool, and like all tools you should understand how and when to use it.
+    Like knowing when to use a hammer instead of a saw, it's important to know when to use Ember instead of something else.
+    To do that it's helpful to think about what kind of problem Ember solves.
+    Is it "build a website"?
+          "build a website plus some JS?"
+          "build an application?"
+          "build a well structured application?"
+    So, a useful question to get started thinking about where Ember fits in is:
+  </aside>
+</section>
+
+<section>
+  <br/><br/>
+  <h1>Set the stage</h1>
+  <br/><br/>
+  <h2>Where does the face<br/>of your web app live?</h2>
+  <br/><br/>
+  <h2 class="">Where is it generated?</h2>
+</section>
+<section>
+  <h2>"Traditional" web apps</h2>
+  <br />
+  <ol>
+    <li class="">Generate a giant string of HTML on the server<br/><br/></li>
+    <li class="">Deliver a fully formed 'document' to the browser <br /><br /></li>
+    <li class="">Apply a sprinkle of JavaScript <br /><br /></li>
+    <li class="fade-in">Replace bits of markup via AJAX</li>
+  </ol>
+</section>
+<section>
+  <h2>Single page apps</h2>
+  <br />
+  <ol>
+    <li class="fade-in">Deliver empty application assets to the browser <br /><br /></li>
+    <li class="fade-in">Pull/push raw data via JSON <br /><br /></li>
+    <li class="fade-in">Assemble the 'document' in the browser</li>
+  </ol>
+</section>
+
+
+<section data-background="img/ghost_ship_tomster.jpg" data-state="title-slide" data-transition="zoom">
+  <h1 class="smaller">Challenges of SPAs</h1>
+</section>
+
+<section>
+  <h1 class="smaller">Challenges of SPAs</h1>
+  <br/>
+  <ul>
+    <li>Rebuilding the <code>a</code> tag</li><br/>
+    <li>Data retrieval &amp; display<br/></li><br/>
+    <li>User interaction<br/></li><br/>
+    <li>Data binding<br/></li><br/>
+    <li>Manipulating the URL<br/></li><br/>
+    <li>Setting up initial state<br/></li><br/>
+  </ul>
+</section>
+
+
+<section data-background="img/elephant_tomster.jpg" data-state="title-slide">
+  <h1 class="smaller-yet">Ember to the rescue!</h1>
+</section>
+
+
+<section>
+  <h1 class="smaller-yet">Ember to the rescue!</h1>
+  <br/><br/>
+  <h2>Ember strives to solve all of these problems</h2>
+  <br/><br/>
+  <h2>in an opinionated way</h2>
+</section>
+
+
+
+<section>
+  <h1>MVC<span class="fragment appear">-ish</span></h1>
+  <br />
+  <div class="fragment fade-in">
+  <p class="">NOT server side MVC</p>
+  <br />
+  <p class="">Many of the same terms<br/>but sometimes they mean different things</p>
+  </div>
+</section>
+<section>
+  <h1>MVC<span class="fragment fade-in">+</span></h1>
+  <ul>
+    <li>Model</li>
+    <li>View</li>
+    <li>Controller</li>
+    <div class="fragment fade-in">
+    <li class="fade-in">Router</li>
+    <li class="fade-in">Route</li>
+    <li class="fade-in">Template</li>
+    </div>
+  </ul>
+</section>
+<!--
+<section>
+  <h3>Over Simplified Request Path</h3>
+  <br />
+  <div class="fade-in">Router</div>
+  <div class="fade-in">&darr;<br />Route</div>
+  <div class="fade-in">&darr;<br />Model</div>
+  <div class="fade-in">&darr;<br />Controller</div>
+  <div class="fade-in">&darr;<br />View</div>
+  <div class="fade-in">&darr;<br />Template</div>
+</section>
+-->
+<!--
+<section>
+  <h2>Let's compare with Rails MVC<span class="fragment fade-in">+</span></h2>
+  <br>
+  <h3 class="fragment fade-in">MVC+ == MVC SPD</h3>
+  <br />
+  <h3 class="fragment fade-in">Services &amp; Presenters/Decorators</h3>
+</section>
+-->
+<!--
+<section>
+  <h3>Comparison with Rails MVC SPD</h3>
+  <br />
+  <table class="comparison">
+    <tr>
+      <th>Ember</th>
+      <th>Rails</th>
+      <th>My Reaction</th>
+    </tr>
+    <tr class="fragment fade-in">
+      <td>Router</td>
+      <td>config/routes.rb</td>
+      <td class="fragment fade-in">makes sense</td>
+    </tr>
+    <tr class="fragment fade-in">
+      <td>Route</td>
+      <td>Controller action<br/>(index, new, edit)</td>
+      <td class="fragment fade-in">wat</td>
+    </tr>
+    <tr class="fragment fade-in">
+      <td>Controller</td>
+      <td>Controller action<br/>(create, update, delete)<br/>and/or Service Object</td>
+      <td class="fragment fade-in">wat</td>
+    </tr>
+    <tr class="fragment fade-in">
+      <td>Model</td>
+      <td>Model</td>
+      <td class="fragment fade-in">Yay!</td>
+    </tr>
+    <tr class="fragment fade-in">
+      <td>View</td>
+      <td>Presenter/Decorator</td>
+      <td class="fragment fade-in">wat</td>
+    </tr>
+    <tr class="fragment fade-in">
+      <td>Template</td>
+      <td>View/template</td>
+      <td class="fragment fade-in">wat</td>
+    </tr>
+  </table>
+</section>
+-->
+
+<section data-background="img/city-hall-1-tomster.jpg" data-state="title-slide">
+  <br/><br/>
+  <br/><br/>
+  <br/>
+  <h1 class="smallest"><code>where Ember == Rails</code></h1>
+</section>
+
+<section>
+  <h1 class="smallest"><code>where Ember == Rails</code></h1>
+
+
+  <div class="fade-in">
+    <h3><code>Router == config/routes.rb</code></h3>
+    <p>Connect URLs to code paths</p>
+  </div>
+
+  <pre class="fragment fade-in"><code class="ruby">
+  # Rails config/routes.rb
+  Rails.application.routes.draw do
+    get 'about' => 'static_pages#about', :as => :about
+  end
+  </code></pre>
+
+  <pre class="fragment fade-in"><code class="javascript">
+  // Ember Router
+  App.Router.map(function(){
+    this.route('about');
+  });
+  </code></pre>
+
+</section>
+
+
+<section>
+  <h1 class="smallest"><code>where Ember == Rails</code></h1>
+
+  <div class="fade-in">
+    <h3><code>Model == Model</code></h3>
+    <p>Object wrapper for business data</p>
+  </div>
+  <div class="fragment fade-in">
+  <pre><code>
+  # Rails db/schema.rb
+  create_table "patterns" do |t|
+    t.integer   "p1"
+    t.integer   "p2"
+    t.integer   "p3"
+    # ...
+  end
+  </code></pre>
+  <pre><code class="ruby">
+  class Pattern < ActiveRecord::Base
+    def name
+      "#{p1}-#{p2}-#{p3}"
+    end
+  end
+  </code></pre>
+  </div>
+</section>
+
+
+<section>
+  <h1 class="smallest"><code>where Ember == Rails</code></h1>
+
+  <div class="fade-in">
+    <h3><code>Model == Model</code></h3>
+    <p>Object wrapper for business data</p>
+  </div>
+  <div class="fragment fade-in">
+  <pre><code class="javascript">
+  App.Pattern = DS.Model.extend({
+    p1 : DS.attr('number'),
+    p2 : DS.attr('number'),
+    p3 : DS.attr('number'),
+
+    name : function(){
+      return this.get('p1') + '-' +
+             this.get('p2') + '-' +
+             this.get('p3');
+    }.property('p1','p2','p3')
+  });
+  </code></pre>
+  </div>
+</section>
+
+
+<section data-background="img/city-hall-2-tomster.jpg" data-state="title-slide">
+  <h1 class="smallest"><code>where Ember != Rails</code></h1>
+</section>
+
+<section>
+  <h1 class="smallest"><code>where Ember != Rails</code></h1>
+  
+  <h2><code>Rails : view == template</code></h2>
+  <h2><code>Ember : view != template</code></h2>
+  <div class="fragment fade-in">
+    <br/><br/>
+    <h3><code>Template == Template</code></h3>
+    <p>Markup for UI</p>
+  </div>
+
+  <div class="fragment fade-in">
+    <br/>
+    <h3><code>Ember Views =~ JS Sprinkles</code></h3>
+    <p>Interaction &amp; DOM Logic</p>
+    <p>Ember Components are VERY similar</p>
+  </div>
+</section>
+
+
+<section>
+  <h1 class="smaller-yet">Components &amp; Views</h1>
+  <br />
+  <h3>Interaction &amp; DOM logic</h3>
+  <br />
+  <p class="fragment fade-in">This is the place for jQuery DOM selectors and<br/>integration with other JS libs.</p>
+</section>
+
+<section>
+  <h1 class="smaller-yet">Components vs. Views</h1>
+  <br/><br/>
+  <h2>Component</h2>
+  <ul>
+    <li>Isolated (No application context)</li>
+    <li>Only knows about whatever you pass in to it</li>
+  </ul>
+  <br/><br/>
+  <div class="fragment fade-in">
+  <h2>View</h2>
+  <ul>
+    <li>Not-Isolated (Has appication context)</li>
+    <li>Knows about the controller for the current template</li>
+  </ul>
+  </div>
+</section>
+<section>
+  <h2 class="fade-in">Use Components<br/><br/> if possible</h2>
+</section>
+
+
+
+
+
+
+
+<section>
+  <h1 class="smallest"><code>where Ember != Rails</code></h1>
+  <br/>
+  <h2>What is a Route?</h2>
+
+  <pre class="fragment fade-in"><code class="ruby">
+  # Rails config/routes.rb
+  get 'about' # <-- This line is commonly called a route.
+  </code></pre>
+
+  <pre class="fragment fade-in"><code class="javascript">
+  // Ember Router
+  this.route('about'); // <-- This line is commonly called ???
+                       // A line in the router?
+                       // It is NOT a Route.
+  </code></pre>
+</section>
+<section>
+  <h1 class="smallest"><code>where Ember != Rails</code></h1>
+  <br/>
+  <h3><code>Rails : route IN the router&nbsp;&nbsp;&nbsp;</code></h3>
+  <h3><code>Ember : Route AFTER the router</code></h3>
+</section>
+<section>
+  <h1 class="smallest"><code>where Ember != Rails</code></h1>
+  <br/>
+  <h3>What happens after URL mapping?</h3>
+  <div class="fragment fade-in">
+  <pre><code class="ruby">
+  # app/controllers/pages_controller.rb
+  class PagesController < ApplicationController
+    def about
+      @authors = Author.all
+    end
+  end
+  </code></pre>
+  </div>
+  <pre class="fragment fade-in"><code>
+  App.AboutRoute = Ember.Route.extend({
+    model : function(){
+      return this.store.find('author');
+    }
+  });
+  </code></pre>
+</section>
+
+
+<section>
+  <h1 class="smallest"><code>where Ember != Rails</code></h1>
+  <br/>
+  <h3>So Ember Route == Rails Controller?</h3>
+  <br/>
+  <h3 class="fragment fade-in">Not exactly</h3>
+  <br/>
+  <div class="fragment fade-in">
+    <h3><code>Route =~ GET Controller actions</code></h3>
+    <p>Setup data for user interaction (index, new, edit, show)</p>
+  </div>
+</section>
+<section>
+  <h1 class="smallest"><code>where Ember != Rails</code></h1>
+  <br/>
+  <h3>So, what about other<br/>Rails controller actions?</h3>
+  <br/>
+  
+  <br/>
+  <div class="fragment fade-in">
+    <h3><code>Controller =~ [POST|PUT|DELETE] Controller actions</code></h3>
+    <p>Handle user interactions and input (create, update, delete)</p>
+  </div>
+</section>
+
+<section>
+  <h1 class="smallest"><code>where Ember != Rails</code></h1>
+  <br/>
+  <h2>Ember Controllers</h2>
+  <br/>
+  <pre><code class="javascript">
+  App.PatternsNewController = Ember.ObjectController.extend({
+    actions : {
+      savePattern : function(){
+        this.get('model').save();
+        this.transitionToRoute('pattern',this.get('model'));
+      }
+    }
+  });
+  
+  </code></pre>
+</section>
+
+
+
+<!--
+<section>
+  <h2>WAT?!?</h2>
+  <br />
+  <h2 class="fragment fade-in">Context Matters!</h2>
+  <br />
+  <h2 class="fragment fade-in">Different needs<br/>call for different solutions</h2>
+</section>
+<section>
+  <h3>Rails is stateless</h3>
+  <br />
+  <h3>Ember apps are stateful</h3>
+  <br /><br />
+  <div class="fragment fade-in">
+    <h3 class="fade-in">Rails has an explicit<br />request/response cycle</h3>
+    <br />
+    <h3 class="fade-in">Ember apps are long running<br />with internal state transitions</h3>
+  </div>
+</section>
+-->
+
+<!--
+<section>
+  <h1>Understanding the pieces</h1>
+</section>
+<section>
+  <table class="comparison">
+    <tr>
+      <th>Component</th>
+      <th>Function</th>
+    </tr>
+
+    <tr class="fragment fade-in">
+      <td>Model</td>
+      <td>Object wrapper for business data</td>
+    </tr>
+    <tr class="fragment fade-in">
+      <td>View</td>
+      <td>Interaction logic</td>
+    </tr>
+    <tr class="fragment fade-in">
+      <td>Controller</td>
+      <td>Business logic</td>
+    </tr>
+    <tr class="fragment fade-in">
+      <td>Route</td>
+      <td>Controller setup / Model lookup &amp; filtering</td>
+    </tr>
+
+    <tr class="fragment fade-in">
+      <td>Template</td>
+      <td>Markup for UI *</td>
+    </tr>
+
+    <tr class="fragment fade-in">
+      <td>Router</td>
+      <td>Browser/URL logic *</td>
+    </tr>
+
+  </table>
+  <br /><br />
+  <p class="fragment fade-in">* These components are artifacts of developing an app<br/>to be run inside of a browser.</p>
+</section>
+-->
+
+
+<section data-background="img/water_tomster.jpg" data-state="title-slide">
+  <h1 class="smaller">Part 1 Wrap Up</h1>
+</section>
+
+<section>
+  <h1 class="smaller">Part 1 Wrap Up</h1>
+  <br/><br/>
+  <h2>Ember is opinionated</h2>
+  <br/><br/>
+  <h2>Don't try to fight it</h2>
+  <br/><br/>
+  <h2>Just learn about<br/>those opinions</h2>
+</section>
+
+<section>
+  <h1 class="smaller-yet">Handy comparisons</h1>
+  <table class="comparison">
+    <tr>
+      <th>Ember</th>
+      <th>&nbsp;&nbsp;=~&nbsp;&nbsp;</th>
+      <th>Rails</th>
+    </tr>
+    <tr>
+      <td>Router</td>
+      <td>&nbsp;&nbsp;=~&nbsp;&nbsp;</td>
+      <td>config/routes.rb</td>
+    </tr>
+    <tr>
+      <td>Model</td>
+      <td>&nbsp;&nbsp;=~&nbsp;&nbsp;</td>
+      <td>Model</td>
+    </tr>
+    <tr>
+      <td>Template</td>
+      <td>&nbsp;&nbsp;=~&nbsp;&nbsp;</td>
+      <td>Template</td>
+    </tr>
+    <tr>
+      <td>Views</td>
+      <td>&nbsp;&nbsp;=~&nbsp;&nbsp;</td>
+      <td>JS Sprinkles</td>
+    </tr>
+    <tr>
+      <td>Route</td>
+      <td>&nbsp;&nbsp;=~&nbsp;&nbsp;</td>
+      <td>GET Controller actions</td>
+    </tr>
+    <tr>
+      <td>Controller</td>
+      <td>&nbsp;&nbsp;=~&nbsp;&nbsp;</td>
+      <td>[POST|PUT|DELETE] Controller actions</td>
+    </tr>
+  </table>
+</section>
+
+<section>
+  <h2>When to use Ember?</h2>
+  <br/><br/>
+  <h2>When NOT to use Ember?</h2>
+</section>
+
+
+
+<section data-background="img/la-jolla-tomster.jpg" data-state="title-slide last-slide">
+   <h1 class="smaller-yet">Thanks For Watching!</h1>
+
+   <table border="0" class="vert-middle">
+    <tr>
+      <td>
+        <p>@jagthedrummer</p>
+        <p>jeremy@octolabs.com</p>
+        <p><a href="http://www.octolabs.com/emberfest2014">http://www.octolabs.com/emberfest2014</a></p>
+      </td>
+      <td>
+        <img src="img/octologo.png" class="no-border">
+      </td>
+    </tr>
+  </table>
+
+  <h1 class="smallest">Keep Going --></h1>
+  <br/><br/><br/><br/><br/>
+  <h1 class="smallest">67 Bonus Slides</h1>
+  <h1 class="smallest">13 JSBin Examples</h1>
+
+</section>
+
+
+
+<section data-background="img/elephant_tomster.jpg" data-state="title-slide">
+  <h1 class="smaller">PatternLab Demo</h1>
+</section>
+
+<section>
+  <h1 class="smaller">PatternLab Demo</h1>
+  <a href="http://emberjs.jsbin.com/falat/8/edit?output">http://emberjs.jsbin.com/falat/8/edit?output</a>
+  <hr/>
+  <img src="img/pattern-lab-demo.gif" class="no-border"/>
+</section>
+
+
+<section data-background="img/memorial_tomster.jpg" data-state="title-slide">
+  <h1>The Plan</h1>
+</section>
+
+<section>
+  <h1>The Plan</h1>
+  <br/>
+    <ol>
+      <li>State a Goal</li>
+      <br/>
+      <li>Rails way (sometimes)</li>
+      <br/>
+      <li>Ember way</li>
+      <br/>
+      <li>GOTO 1</li>
+    </ol>
+</section>
+
+
+
+<section data-background="img/park_tomster.jpg" data-state="title-slide">
+  <h1>Getting Started</h1>
+</section>
+
+<section>
+  <h1>Getting Started</h1>
+  <br/><br/>
+  <h3>Starting With A Very Simple App</h3>
+</section>
+
+<section>
+  <h1>Rails</h1>
+  <pre><code class="ruby">
+  # config/routes.rb
+  Rails.application.routes.draw do
+    root :to => 'static_pages#home'
+  end
+  </code></pre>
+  <div class="fragment fade-in">
+  <pre><code class="ruby">
+  <!-- app/views/static_pages/home.html.erb -->
+  <h1>This app is useless!</h1>
+  </code></pre>
+  </div>
+  <div class="fragment fade-in">
+  <pre><code class="ruby">
+  # app/controllers/static_pages_controller.rb
+  class StaticPagesController < ApplicationController
+  end
+  </code></pre>
+  </div>
+</section>
+
+
+<section>
+  <h1>Ember</h1>
+
+  <pre><code>
+  App = Ember.Application.create();
+  </code></pre>
+  <pre><code>
+  &lt;script type="text/x-handlebars"&gt;
+    <h2>Welcome to the Pattern Lab!</h2>
+    <p>Your home for procedurally generated patterns.</p>
+    <p>This is a small demo app built with Ember and Ember Data.</p>
+  &lt;/script&gt;
+  </code></pre>
+  <br /><br />
+</section>
+
+<section>
+  <a href="http://emberjs.jsbin.com/guyed/1/edit">http://emberjs.jsbin.com/guyed/1/edit</a>
+  <hr />
+  <img src="img/simple-app.gif" class="no-border"/>
+</section>
+
+<section>
+  <h3 class="">Ember "magic" at work.</h3>
+  <br />
+  <h3 class="">Only write the parts you need.</h3>
+  <br/>
+</section>
+
+
+<section>
+  <h2>Ember will 'auto generate'<br/><br/> any parts of the stack<br/><br/> that you don't write</h2>
+</section>
+<section>
+  <h3>If you wanted to be explicit</h3>
+  <br />
+  <pre><code>
+  App = Ember.Application.create();
+
+  App.Router.map(function(){
+    this.route('index',{ path:'' })
+  });
+  
+  App.IndexRoute = Ember.Route.extend({});
+
+  App.IndexController = Ember.ObjectController.extend({});
+
+  App.IndexView = Ember.View.extend({});
+
+  &lt;script type="text/x-handlebars" id="index"&gt;
+    &lt;h1&gt;This app is verbose AND useless!&lt;/h1&gt;
+  &lt;/script&gt;
+  </code></pre>
+  <a href="http://emberjs.jsbin.com/boyim/3/edit">http://emberjs.jsbin.com/boyim/3/edit</a>
+</section>
+
+
+<section>
+  <img src="img/ember-fishy.png" alt="" />
+  <br />
+  <h3>Don't write it if you don't need it!</h3>
+</section>
+
+<section>
+  <h1 class="smaller">Application layout</h1>
+</section>
+
+<section>
+  <h1>Rails</h1>
+  <pre><code class="html">
+  <!--app/views/layouts/application.html.erb -->
+  &lt;html&gt;
+    &lt;head>...&lt;/head>
+    &lt;body>
+
+      <h1>This is the layout</h1>
+      <hr />
+      <%= yield %>
+
+    &lt;/body>
+  &lt;/html>
+  </code></pre>
+
+  <pre><code class="ruby">
+  <!-- app/views/static_pages/home.html.erb -->
+  <h1>This app is useless!</h1>
+  </code></pre>
+</section>
+
+<section>
+  <h1>Ember</h1>
+  <pre><code>
+  <script type="text/x-handlebars">
+    <div class="header">
+      <h1 id='title'>
+        {{#link-to 'index'}}PatternLab{{/link-to}}
+      </h1>
+    </div>
+
+    {{outlet}}
+  </script>
+ 
+
+  <script type="text/x-handlebars" id="index">
+    <h2>Welcome to the Pattern Lab!</h2>
+    <p>Your home for procedurally generated patterns.</p>
+    <p>This is a small demo app built with Ember and Ember Data.</p>
+  </script>
+  </code></pre>
+</section>
+
+<section>
+  <a href="http://emberjs.jsbin.com/rumit/1/edit">http://emberjs.jsbin.com/rumit/1/edit</a>
+  <hr />
+  <img src="img/application-layout.gif" class="no-border"/>
+</section>
+
+
+<section>
+  <h1>Adding a page</h1>
+</section>
+
+
+
+<section>
+  <h1>Rails</h1>
+  <pre><code class="ruby">
+  # config/routes.rb
+  Rails.application.routes.draw do
+    # ...
+    get 'about' => 'static_pages#about', :as => :about
+  end
+  </code></pre>
+  
+
+  <pre><code class="erb">
+  <!-- app/views/static_pages/about.html.erb -->
+  <h1>This app has not gotten any more useful...</h1>
+  </code></pre>
+
+  <pre><code class="ruby">
+  <%= link_to 'About', about_path %>
+  </code></pre>
+</section>
+
+<section>
+  <h1>Ember</h1>
+  <pre><code class="javascript">
+  App.Router.map(function(){
+    this.route('about');
+  });
+  </code></pre>
+  <pre class="fragment fade-in"><code>
+  <script type="text/x-handlebars" id="about">
+    <h2>About</h2>
+    <p>PatternLab is a small demo appliction of Ember.</p>
+  </script>
+  </code></pre>
+  <pre class="fragment fade-in"><code>
+  <script type="text/x-handlebars">
+    <!-- ... -->
+    {{#link-to 'about'}}About{{/link-to}}
+    <!-- ... -->
+  </script>
+  </code></pre>
+</section>
+
+<section>
+  <a href="http://emberjs.jsbin.com/falat/3/edit">http://emberjs.jsbin.com/falat/3/edit</a>
+  <hr />
+  <img src="img/adding-a-page.gif" class="no-border"/>
+</section>
+
+
+<section data-background="img/window_tomster.jpg" data-state="title-slide">
+  <h1>Aside</h1>
+</section>
+
+<section>
+  <h1>Templates</h1>
+  <br />
+  <h3>The markup for the stuff that<br/>a user actually sees</h3>
+</section>
+<section>
+  <h1>Handlebars</h1>
+  <img src="img/handlebars.png" alt="" />
+</section>
+<section>
+  <h3>Handlebars templates are dumb</h3>
+  <div class="fragment fade-in">
+  <img src="img/troll.png" alt="" width="300" class="fade-in"/>
+  <p class="fade-in">They can't contain much logic.</p>
+  </div>
+</section>
+<!--
+<section>
+  <h3>But they're smart when it<br/>comes to data binding</h3>
+  <br />
+  <pre><code>
+    &lt;script type="text/x-handlebars" data-template-name="index"&gt;
+      &lt;p&gt;Created by : {{fullName}}&lt;/p&gt;
+      &lt;p&gt;
+      {{view Em.TextField valueBinding='content.firstName'}}
+      {{view Em.TextField valueBinding='content.lastName'}}
+      &lt;/p&gt;
+    &lt;/script&gt;
+  </code></pre>
+</section>
+-->
+
+
+<section>
+  <h1>Router</h1>
+  <br />
+  <h3>Browser URL logic</h3>
+  <br />
+  <p>The 'map' for distinct parts of your app</p>
+  <br />
+  <p class="fragment fade-in">gives you bookmarkable/shareable URLs within your app</p>
+  <br />
+  <p class="fragment fade-in">handles reading/writing the URL bar</p>
+  <br />
+  <p class="fragment fade-in">passes 'path variables' into your Route</p>
+  <br/><br/><br/>
+  <a href="http://emberjs.jsbin.com/falat/3#/about">http://emberjs.jsbin.com/falat/3#/about</a>
+</section>
+
+
+<!--
+<section>
+  <h1>Benefits of the Router</h1>
+  <ul>
+    <li>Internal Linking</li>
+    <li>Linkable/Shareable URLs</li>
+    <li>Sets Initial State</li>
+  </ul>
+  <br/><br/><br/>
+  <a href="http://emberjs.jsbin.com/falat/3#/about">http://emberjs.jsbin.com/falat/3#/about</a>
+</section>
+-->
+
+
+
+
+
+
+
+
+<section>
+  <h1 class="smaller">Rendering Partials</h1>
+</section>
+
+<section>
+  <h1>Rails</h1>
+  <pre><code class="html">
+    <!-- in app/views/layouts/application.html.erb -->
+    <%= render 'layouts/footer' %>
+  </code></pre>
+  <pre class="fragment fade-in"><code class="html">
+    <!-- app/views/layouts/_footer.html.erb -->
+    <hr />&amp;copy; OctoLabs
+  </code></pre>
+</section>
+
+<section>
+  <h1>Ember</h1>
+  <pre><code>
+  <script type="text/x-handlebars">
+    <!-- ... -->
+    {{partial 'footer'}}
+  </script>
+  </code></pre>
+  <pre class="fragment fade-in"><code>
+  <script type="text/x-handlebars" id="_footer">
+    <hr/>&amp;copy; OctoLabs
+  </script>
+  </code></pre>
+</section>
+
+
+<section>
+  <a href="http://emberjs.jsbin.com/jevexo/1/edit">http://emberjs.jsbin.com/jevexo/1/edit</a>
+  <hr />
+  <img src="img/rendering-partials.gif" class="no-border"/>
+</section>
+
+
+
+
+<section>
+  <h1>Displaying Data</h1>
+</section>
+
+<section>
+  <h1>Rails</h1>
+  <pre><code class="ruby">
+  # app/controllers/static_pages_controller.rb
+  class StaticPagesController < ApplicationController
+    def about
+      @about_data = {
+        :version => "0.0.1"
+      }
+    end
+  end
+  </code></pre>
+  <pre class="fragment fade-in"><code class="html">
+  <!-- app/views/static_pages/about.html.erb -->
+  <h1>About</h1>
+  <p>Version : <%= @about_data[:version] %></p>
+  </code></pre>
+</section>
+
+<section>
+  <h1>Route</h1>
+  <br />
+  <h3>Controller setup</h3>
+  <h3>Model creation/lookup/filtering</h3>
+</section>
+
+
+<section>
+  <h1>Ember</h1>
+  <pre><code class="javascript">
+  App.IndexRoute = Ember.Route.extend({
+    model : function(){
+      return {
+        version : "0.0.1"
+      };
+    }
+  });
+  </code></pre>
+
+  <pre class="fragment fade-in"><code class="html">
+  <script type="text/x-handlebars" id="index">
+    <!-- ... -->
+    <p>Version : {{version}}</p>
+  </script>
+  </code></pre>
+</section>
+
+
+<section>
+  <a href="http://emberjs.jsbin.com/wiyoh/1/edit">http://emberjs.jsbin.com/wiyoh/1/edit</a>
+  <hr />
+  <img src="img/displaying-data.gif" class="no-border"/>
+</section>
+
+
+
+
+<section>
+  <h1>Data Binding</h1>
+  <pre class="fade-in"><code class="html">
+  <script type="text/x-handlebars" id="index">
+    <!-- ... -->
+    <p>Version : {{version}}</p>
+    {{input value=version}}
+  </script>
+  </code></pre>
+</section>
+
+
+<section>
+  <a href="http://emberjs.jsbin.com/leyog/1/edit">http://emberjs.jsbin.com/leyog/1/edit</a>
+  <hr />
+  <img src="img/data-binding.gif" class="no-border"/>
+</section>
+
+<section>
+  <h1>Models</h1>
+  <h2>Object wrapper for data</h2>
+</section>
+
+<section>
+  <h1>Rails</h1>
+  <pre><code>
+  # in db/schema.rb
+  create_table "patterns" do |t|
+    t.integer   "p1"
+    t.integer   "p2"
+    t.integer   "p3"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
+  end
+  </code></pre>
+  <pre><code class="ruby">
+  class Pattern < ActiveRecord::Base
+    def name
+      "#{p1}-#{p2}-#{p3}"
+    end
+  end
+  </code></pre>
+</section>
+
+<section>
+  <h1>Rails</h1>
+  <pre><code class="ruby">
+  resources :patterns
+  </code></pre>
+  <pre><code class="ruby">
+  class PatternsController < ApplicationController
+    def index
+      @patterns = Pattern.all
+    end
+  end
+  </code></pre>
+  <pre><code class="erb">
+  <h2>Latest Patterns</h2>
+  <ul>
+    <% @patterns.each do |pattern| %>
+      <li><%= pattern.name %></li>
+    <% end %>
+  </ul>
+  </code></pre>
+</section>
+
+
+<section>
+  <h1>Ember</h1>
+  <pre><code class="javascript">
+  App.Pattern = DS.Model.extend({
+    p1 : DS.attr('number'),
+    p2 : DS.attr('number'),
+    p3 : DS.attr('number'),
+
+    name : function(){
+      return this.get('p1') + '-' +
+             this.get('p2') + '-' +
+             this.get('p3');
+    }.property('p1','p2','p3')
+  });
+  </code></pre>
+  <pre><code class="javascript">
+  App.Router.map(function() {
+    // ...
+    this.resource('patterns');
+  });
+  </code></pre>
+</section>
+
+<section>
+  <h1>Ember</h1>
+  <pre><code class="javascript">
+  App.PatternsRoute = Ember.Route.extend({
+    model : function(){
+      return [this.store.createRecord('pattern',
+        { p1 : 1, p2 : 2, :p3 : 5}
+      )];
+    }
+  });
+  </code></pre>
+  <pre><code class="javascript">
+  <script type="text/x-handlebars" id="patterns">
+    <h2>Latest Patterns</h2>
+    <ul>
+      {{#each}}
+        <li>{{name}}</li>
+      {{/each}}
+    </ul>
+  </script>
+  </code></pre>
+</section>
+
+
+<section>
+  <a href="http://emberjs.jsbin.com/letok/1/edit">http://emberjs.jsbin.com/letok/1/edit</a>
+  <hr />
+  <img src="img/models.gif" class="no-border"/>
+</section>
+
+<section>
+  <h1>Fixture Adapter</h1>
+</section>
+
+<section>
+  <pre><code>
+  App.ApplicationAdapter = DS.FixtureAdapter;
+  </code></pre>
+  <pre><code>
+  App.Pattern.reopenClass({
+    FIXTURES: [
+      { id: 1, p1 : 1, p2 : 2, p3 : 5},
+      { id: 2, p1 : 42, p2 : 142, p3 : 242},
+      { id: 3, p1 : 100, p2 : 200, p3 : 300}
+    ]
+  });
+  </code></pre>
+  <pre><code>
+  App.PatternsRoute = Ember.Route.extend({
+    model : function(){
+      return this.store.find('pattern');
+    }
+  });
+  </code></pre>
+</section>
+
+
+<section>
+  <a href="http://emberjs.jsbin.com/vibeza/2/edit">http://emberjs.jsbin.com/vibeza/2/edit</a>
+  <hr />
+  <img src="img/fixture-adapter.gif" class="no-border"/>
+</section>
+
+
+<section>
+  <h2>Dynamic routes<br/><br/> & <br/><br/>Nested routes and templates</h2>
+</section>
+
+<section>
+  <h1>Ember</h1>
+  <pre><code>
+  App.Router.map(function() {
+    this.resource('patterns',function(){
+      this.resource('pattern', { path: '/:pattern_id' });
+    });
+  });
+  </code></pre>
+  <pre><code class="javascript">
+  <script type="text/x-handlebars" id="pattern">
+    <h3>{{name}}</h3>
+  </script>
+  </code></pre>
+</section>
+<section>
+  <pre><code class="javascript">
+  <script type="text/x-handlebars" id="patterns">
+    <h2>Latest Patterns</h2>
+    <ul>
+      {{#each}}
+        <li>
+          {{#link-to 'pattern' this}}{{name}}{{/link-to}}
+        </li>
+      {{/each}}
+    </ul>
+    {{outlet}}
+  </script>
+  </code></pre>
+</section>
+
+
+<section>
+  <a href="http://emberjs.jsbin.com/gekuw/1/edit">http://emberjs.jsbin.com/gekuw/1/edit</a>
+  <hr />
+  <img src="img/nested-routes-templates.gif" class="no-border"/>
+</section>
+
+
+<section>
+  <h1 class="smaller">Rendering a pattern</h1>
+  <br/>
+  <h2>Components and/or Views</h2>
+  <br/>
+  <h2>Which one to use?</h2>
+</section>
+
+<section>
+  <h1 class="smaller-yet">Components &amp; Views</h1>
+  <br />
+  <h3>Interaction &amp; DOM logic</h3>
+  <br />
+  <p class="fragment fade-in">This is the place for jQuery DOM selectors and<br/>integration with other JS libs.</p>
+  <br />
+  <p class="fragment fade-in">Probably.</p>
+</section>
+
+<section>
+  <h1>Differences</h1>
+  <br/><br/>
+  <h2>Component</h2>
+  <ul>
+    <li>Isolated (No application context)</li>
+    <li>Only knows about whatever you pass in to it</li>
+  </ul>
+  <br/><br/>
+  <div class="fragment fade-in">
+  <h2>View</h2>
+  <ul>
+    <li>Not-Isolated (Has appication context)</li>
+    <li>Knows about the controller for the current template</li>
+  </ul>
+  </div>
+</section>
+<section>
+  <h2 class="fade-in">Use Components<br/><br/> if possible</h2>
+</section>
+
+<!--
+<section>
+  <h2>Views are rarely needed</h2>
+  <br />
+  <p class="fragment fade-in">From the Ember View doc:</p>
+  <blockquote class="fragment fade-in">
+    Views in Ember.js are typically only created for the following reasons:
+    <br/><br />
+    When you need sophisticated handling<br/> of user events
+    <br/><br />
+    When you want to create<br/> a re-usable component
+    <br /><br />
+    Often, both of these requirements will be present at the same time.
+  </blockquote>
+</section>
+-->
+<!--
+<section>
+  <h3>
+    Components &amp; Views should receive raw browser events and translate them
+    into semantically meaningful actions within the app.
+  </h3>
+</section>
+-->
+
+
+
+
+<section>
+  <h2>Pattern Display Component</h2>
+  <pre><code class="javascript">
+  {{pattern-display pattern=model width="256" height="256"}}
+  </code></pre>
+  <pre><code class="javascript">
+  <script type="text/x-handlebars" id="components/pattern-display">
+    <canvas {{bind-attr id=canvasId
+                        width=width
+                        height=height
+    }}></canvas>
+  </script>
+  </code></pre>
+</section>
+<section>
+  <a href="http://amsqr.github.io/chromanin.js/texgen.html">Chromanin.js</a>
+  <pre><code class="javascript">
+  App.PatternDisplayComponent = Ember.Component.extend({
+    drawPattern : function(){
+      var ch = new Chromanin(256,this.get('canvasId')),
+          p1 = this.get('pattern.p1'),
+          p2 = this.get('pattern.p2'),
+          p3 = this.get('pattern.p3');
+      ch.initlayers(256,256);
+      ch.checkerBoardLayer(0,16,16,p1,p2,p3,0,0,128);
+      ch.sineDistort(0,0,0.100000001490116,p1,p2,p3);
+      ch.addLayers(0,1,4,1,1);
+      ch.addLayers(4,2,4,1,1);
+      ch.addLayers(4,3,4,1,1);
+      ch.writeCanvas();
+    }
+    // ...
+  });
+  </code></pre>
+</section>
+
+<section>
+  <pre><code class="javascript">
+  App.PatternDisplayComponent = Ember.Component.extend({
+    // ...
+    didInsertElement : function(){
+      this.drawPattern();
+    },
+
+    automaticUpdate : function(){
+      Ember.run.next(this,function(){
+        this.drawPattern();
+      });
+    }.observes('pattern','pattern.p1','pattern.p2','pattern.p3'),
+
+    canvasId : function(){
+      return "canvas-" + Math.floor((Math.random() * 1000000) + 1);;
+    }.property('pattern.id')
+  });
+  </code></pre>
+</section>
+
+
+<section>
+  <a href="http://emberjs.jsbin.com/hatev/1/edit">http://emberjs.jsbin.com/hatev/1/edit</a>
+  <hr />
+  <img src="img/pattern-display-component.gif" class="no-border"/>
+</section>
+
+
+
+
+<section>
+  <h1 class="smaller-yet">Create a new pattern</h1>
+</section>
+
+<section>
+  <pre><code>
+  App.Router.map(function() {
+    this.resource('patterns',function(){
+      this.resource('pattern', { path: '/:pattern_id' });
+      this.route('new');
+    });
+  });
+  </code></pre>
+  <pre><code class="javascript">
+  {{#link-to 'patterns.new'}}New Pattern{{/link-to}}
+  </code></pre>
+  <pre><code class="javascript">
+  <script type="text/x-handlebars" id="patterns/new">
+    <h2>Create a new Pattern</h2>
+    {{input value=p1 type='number'}}
+    {{input value=p2 type='number'}}
+    {{input value=p3 type='number'}}
+    <button {{action randomize}}>Randomize</button>
+    <button {{action savePattern}}>Save</button>
+    <br/><br/>
+    {{pattern-display pattern=model width="256" height="256"}}
+  </script>
+  </code></pre>
+  
+</section>
+
+<section>
+  <pre><code class="javascript">
+  App.PatternsNewRoute = Ember.Route.extend({
+    model : function(){
+      return this.store.createRecord('pattern');
+    }
+  });
+  </code></pre>
+
+  <pre><code class="javascript">
+  App.PatternsNewController = Ember.ObjectController.extend({
+    actions : {
+      savePattern : function(){
+        this.transitionToRoute('pattern',this.get('model'));
+      },
+      randomize : function(){
+        this.setProperties({
+          p1 : Math.floor((Math.random() * 1000) + 1),
+          p2 : Math.floor((Math.random() * 1000) + 1),
+          p3 : Math.floor((Math.random() * 1000) + 1)
+        });
+      }
+    }
+  });
+  
+  </code></pre>
+</section>
+
+
+<section>
+  <a href="http://emberjs.jsbin.com/falat/8/edit">http://emberjs.jsbin.com/falat/8/edit</a>
+  <hr />
+  <img src="img/pattern-lab-demo.gif" class="no-border"/>
+</section>
+
+
+<section>
+  <h1>Controllers</h1>
+  <br />
+  <h3>Business logic</h3>
+  <br />
+  <p class="fragment fade-in">
+    Manipulaiton of models and triggering of related events.
+  </p>
+  <br />
+  <p class="fragment fade-in">Also a good place for transaction management.</p>
+</section>
+
+<section>
+  <h2>Controllers come in two flavors</h2>
+  <br />
+  <ul>
+    <li class="fragment fade-in">ObjectController - represents one single model object.<br /><br /></li>
+    <li class="fragment face-in">ArrayController - represents a collection of objects.</li>
+  </ul>
+</section>
+
+
+<section>
+  <h1>REST Adapter</h1>
+</section>
+
+<section>
+  <pre><code class="javascript">
+  App.ApplicationAdapter = DS.RESTAdapter.extend({
+    host : 'http://pattern-lab-api.herokuapp.com'
+  });
+  </code></pre>
+  <pre><code class="javascript">
+  savePattern : function(){
+    var _this = this;
+    this.get('model').save().then(function(pattern){
+      _this.transitionToRoute('pattern',pattern);
+    });
+  }
+  </code></pre>
+  <a href="http://emberjs.jsbin.com/kimoyo/2/edit">http://emberjs.jsbin.com/kimoyo/2/edit</a>
+</section>
+
+
+
+
+<!--
+<section>
+  <pre><code>
+  <script type="text/x-handlebars" id="index">
+    <h2>{{creditHeader}}</h2>
+    {{#each}}
+      <h3>Author : {{authorName}}</h3>
+      {{input value=authorFirstName}}
+      {{input value=authorLastName}}
+    {{/each}}
+    <hr/>
+    {{input value=newFirstName}}
+    {{input value=newLastName}}
+    <button {{action 'createNewCredit'}}>Create</button>
+  </script>
+  </code></pre>
+  <a href="http://emberjs.jsbin.com/maqeb/1/edit">http://emberjs.jsbin.com/maqeb/1/edit</a>
+</section>
+<section>
+  <pre><code>
+  App.IndexController = Ember.ArrayController.extend({
+    newFirstName : "",
+    newLastName  : "",
+    
+    creditHeader : function(){
+      return this.get('length') + " Credits";
+    }.property('length'),
+    
+    actions : {
+      createNewCredit : function(){
+        var atts = {
+          authorFirstName : this.get('newFirstName'),
+          authorLastName  : this.get('newLastName')
+        }
+        this.store.createRecord('credit',atts);
+        this.setProperties({
+          newFirstName : "",
+          newLastName  : ""
+        });
+      }
+    }
+  });
+  </code></pre>
+  <a href="http://emberjs.jsbin.com/maqeb/1/edit">http://emberjs.jsbin.com/maqeb/1/edit</a>
+</section>
+
+<section>
+  <h1>Item Controllers</h1>
+</section>
+
+
+<section>
+  <pre><code>
+  App.IndexController = Ember.ArrayController.extend({
+    itemController : "credit",
+    //...
+  });
+  </code></pre>
+
+  <pre><code>
+  App.CreditController = Ember.ObjectController.extend({
+    isEditing : false,
+    actions : {
+      toggleEdit : function(){
+        this.toggleProperty('isEditing');
+      }
+    }
+  });
+  </code></pre>
+</section>
+<section>
+  <pre><code>
+  {{#each}}
+    {{#if isEditing}}    
+      {{input value=authorFirstName}}
+      {{input value=authorLastName}}
+      <button {{action 'toggleEdit'}}>Save</button>
+    {{else}}
+      <h3>
+        Author : {{authorName}} 
+        <button {{action 'toggleEdit'}}>Edit</button>
+      </h3>
+    {{/if}}
+  {{/each}}
+  </code></pre>
+</section>
+-->
+
+
+
+
+<section data-background="img/la-jolla-tomster.jpg" data-state="title-slide last-slide">
+   <h1 class="smaller-yet">Thanks For Watching!</h1>
+
+   <table border="0" class="vert-middle">
+    <tr>
+      <td>
+        <p>@jagthedrummer</p>
+        <p>jeremy@octolabs.com</p>
+        <p><a href="http://www.octolabs.com/emberfest2014">http://www.octolabs.com/emberfest2014</a></p>
+      </td>
+      <td>
+        <img src="img/octologo.png" class="no-border">
+      </td>
+    </tr>
+  </table>
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+    <script src="lib/js/jquery.min.js"></script>
+    <script src="lib/js/raphael-min.js"></script>
+    <script src="lib/js/underscore-min.js"></script>
+    <script src="lib/js/sequence-diagram-min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: false,
+				progress: false,
+				history: true,
+				center: false,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+        
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 960,
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        // Bounds for smallest/largest possible scale to apply to content
+        minScale: 0.2,
+        maxScale: 1.0,
+
+          
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+      Reveal.addEventListener( 'slidechanged', function( event ) {
+        $slide = $(event.currentSlide);
+        if( $slide.data('chart-built') ){ return; }
+        
+        $slide.data('chart-built',true);
+      } );
+
+
+		</script>
+
+
+    <script>
+      $(".diagram").sequenceDiagram({theme: 'simple'});
+    </script>
+
+	</body>
+</html>
